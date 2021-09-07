@@ -3,4 +3,5 @@
 In this project we will implement a web stack that is similar to the LAMP stack, but instead of using Apache, we will be using an alternative Web Server – NGINX
 This web sever is also very popular and widely used by many websites in the Internet.
 
-Create
+Launch a new EC2 instance of the `t2.micro` family with the Ubuntu Server 20.04 LTS (HVM) AMI under the `free tier`
+
