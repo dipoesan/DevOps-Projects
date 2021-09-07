@@ -1,0 +1,6 @@
+# WEB STACK IMPLEMENTATION (LEMP STACK)
+
+In this project we will implement a web stack that is similar to the LAMP stack, but instead of using Apache, we will be using an alternative Web Server – NGINX
+This web sever is also very popular and widely used by many websites in the Internet.
+
+Create
