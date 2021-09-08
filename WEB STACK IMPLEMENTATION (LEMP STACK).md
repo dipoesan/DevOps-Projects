@@ -1,7 +1,9 @@
 # WEB STACK IMPLEMENTATION (LEMP STACK)
 
 In this project we will implement a web stack that is similar to the LAMP stack, but instead of using Apache, we will be using an alternative Web Server – NGINX
-This web sever is also very popular and widely used by many websites in the Internet.
+This web sever is also very popular and widely used by many websites in the Internet. The LEMP stack consists of Linux, NGINX, MySQL, PHP/Python/Perl.
+
+## STEP 1 – CREATING A LINUX INSTANCE (L)
 
 Launch a new EC2 instance of the `t2.micro` family with the Ubuntu Server 20.04 LTS (HVM) AMI under the `free tier`, and then `SSH` into the instance.
 
@@ -9,7 +11,7 @@ Launch a new EC2 instance of the `t2.micro` family with the Ubuntu Server 20.04 
 
 ![image](https://user-images.githubusercontent.com/22638955/132418712-dddcc93d-53cc-4f01-9f1a-3f939c8aebad.png)
 
-## ![image](https://user-images.githubusercontent.com/22638955/132418712-dddcc93d-53cc-4f01-9f1a-3f939c8aebad.png)
+## STEP 2 – INSTALLING THE NGINX WEB SERVER (E)
 
 To install NGINX, we would first have to by update our server’s package index, then install NGINX after.
 
@@ -54,4 +56,22 @@ If you see the following page, then your web server is now correctly installed a
 
 The above image is the same content as what we got when we ran the `curl` command.
 
+## STEP 3 — INSTALLING MYSQL (M)
 
+Just like we did in the LAMP stack project, we need to install a database management system to store and manage our data in a relational database and our choice is `MySQL`.
+
+```
+sudo apt install mysql-server
+```
+It is recommended that we run a security script that comes pre-installed with MySQL. This script will remove some insecure default settings and lock down access to our database system. Start the interactive script by running:
+
+```
+sudo mysql_secure_installation
+```
+We can test to see if we can access our MySQL server by running the command below - 
+```
+sudo mysql
+```
+![image](https://user-images.githubusercontent.com/22638955/132584840-f258acba-7bd3-42ef-b913-60925138dcca.png)
+
+## STEP 3 – INSTALLING PHP
