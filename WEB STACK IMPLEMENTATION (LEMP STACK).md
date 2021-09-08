@@ -178,7 +178,120 @@ Now go to the browser and try to open the website URL using our IP address found
 ![image](https://user-images.githubusercontent.com/22638955/132594849-42b45b36-a6f6-41c1-8d2d-298fe6fcf2ae.png)
 
 ## STEP 6– TESTING PHP WITH NGINX
-We can test to validate that Nginx can correctly hand `php`files to our PHP processor. 
+We can test to validate that Nginx can correctly hand `php` files to our PHP processor. 
 We can do this by creating a test PHP file in our document root.
-Open a new file called info.php within your document root in your text editor:
+Open a new file called `info.php` within our document root in our text editor - 
+```
+sudo nano /var/www/projectLEMP/info.php
+```
+Paste the following lines of code into the file -
+```
+<?php
+phpinfo();
+```
 
+We can now access this page in our web browser by visiting the domain name or public IP address we’ve set up in our NGINX configuration file, followed by /info.php:
+
+![image](https://user-images.githubusercontent.com/22638955/132596019-42c9e123-6177-4d0b-891c-bf338060e145.png)
+
+It’s best to remove the file we created as it contains sensitive information about our PHP environment and our Ubuntu server. 
+```
+sudo rm /var/www/projectLEMP/info.php
+```
+
+## STEP 7 – RETRIEVING DATA FROM MYSQL DATABASE WITH PHP
+
+In this step we will create a test database (DB) with a simple "To do list" and configure access to it, so the Nginx website would be able to query data from the DB and display it.
+
+Connect to the MySQL console using the root account -
+```
+sudo mysql
+```
+To create a new database, run the following command - 
+```
+CREATE DATABASE `example_database`;
+```
+The following command creates a new user named `example_user`, using mysql_native_password as default authentication method. We’re defining this user’s password as `password`, but you should replace this value with a secure password of your own choosing.
+```
+CREATE USER 'example_user'@'%' IDENTIFIED WITH mysql_native_password BY 'password';
+```
+Now we need to give this user permission over the `example_database` database -
+```
+GRANT ALL ON example_database.* TO 'example_user'@'%';
+```
+This will give the `example_user` user full privileges over the `example_database` database, while preventing this user from creating or modifying other databases on your server.
+
+Exit MySQL shell with -
+```
+exit;
+```
+
+Test if the new user has the proper permissions by logging in to the MySQL console again, this time using the custom user credentials - 
+```
+mysql -u example_user -p
+```
+![image](https://user-images.githubusercontent.com/22638955/132597612-2ca62fb6-1cc3-4a39-b40d-0d6ef6c4d750.png)
+
+Notice the `-p` flag in this command, which will prompt you for the password used when creating the `example_user` user. After logging in to the MySQL console, confirm that you have access to the `example_database` database - 
+```
+SHOW DATABASES;
+```
+
+![image](https://user-images.githubusercontent.com/22638955/132597770-c36d061c-495b-4a1c-90f4-949e54752a6e.png)
+
+Next, we’ll create a test table named todo_list. From the MySQL console, run the following statement -
+```
+CREATE TABLE example_database.todo_list (
+item_id INT AUTO_INCREMENT,
+content VARCHAR(255),
+PRIMARY KEY(item_id)
+);
+```
+Insert a few rows of content in the test table. We would have to repeat the next command a few times, using different VALUES:
+```
+INSERT INTO example_database.todo_list (content) VALUES ("My first important item");
+```
+To confirm that the data was successfully saved to our table, run -
+```
+SELECT * FROM example_database.todo_list;
+```
+![image](https://user-images.githubusercontent.com/22638955/132598296-7cb909a8-2844-4b3e-8521-773be2301da8.png)
+
+After confirming that we have valid data in our test table, we can exit the MySQL console - 
+```
+exit;
+```
+
+Now we can create a PHP script that will connect to MySQL and query for our content. We will create a new PHP file in our custom web root directory using our preferred editor. We’ll use vi for that:
+```
+vi /var/www/projectLEMP/todo_list.php
+```
+The following PHP script connects to the MySQL database and queries for the content of the todo_list table, displays the results in a list. If there is a problem with the database connection, it will throw an exception.
+```
+<?php
+$user = "example_user";
+$password = "password";
+$database = "example_database";
+$table = "todo_list";
+
+try {
+  $db = new PDO("mysql:host=localhost;dbname=$database", $user, $password);
+  echo "<h2>TODO</h2><ol>";
+  foreach($db->query("SELECT content FROM $table") as $row) {
+    echo "<li>" . $row['content'] . "</li>";
+  }
+  echo "</ol>";
+} catch (PDOException $e) {
+    print "Error!: " . $e->getMessage() . "<br/>";
+    die();
+}
+```
+
+Access this page in your web browser by visiting the domain name or public IP address configured for the website, followed by /todo_list.php:
+```
+http://<Public_domain_or_IP>/todo_list.php
+```
+
+![image](https://user-images.githubusercontent.com/22638955/132599452-bf2a0c20-753c-4f7a-8932-c32837669b25.png)
+
+Our PHP environment is ready to connect and interact with our MySQL server.
