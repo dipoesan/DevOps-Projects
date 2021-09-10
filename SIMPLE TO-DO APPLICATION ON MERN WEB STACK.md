@@ -69,4 +69,42 @@ npm init
 
 Run the command `ls` to confirm that we have `package.json` file created.
 
-## INSTALL EXPRESSJS
+## STEP 3 INSTALL EXPRESSJS
+
+To use express, we have to install it using npm -
+```
+npm install express
+```
+Install the dotenv module
+```
+npm install dotenv
+```
+Open the index.js file with the command below
+```
+vi index.js
+```
+
+Type the code below into it and save - 
+
+```
+const express = require('express');
+require('dotenv').config();
+
+const app = express();
+
+const port = process.env.PORT || 5000;
+
+app.use((req, res, next) => {
+res.header("Access-Control-Allow-Origin", "\*");
+res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+next();
+});
+
+app.use((req, res, next) => {
+res.send('Welcome to Express');
+});
+
+app.listen(port, () => {
+console.log(`Server running on port ${port}`)
+});
+```
