@@ -18,7 +18,7 @@ Any interaction that causes a data change request is sent to the NodeJS based Ex
 
 Launch a new EC2 instance of the t2.micro family with the Ubuntu Server 20.04 LTS (HVM) AMI under the free tier, and then SSH into the instance.
 
-## STEP 1 – BACKEND CONFIGURATION
+## STEP 2 – BACKEND CONFIGURATION
 
 Update ubuntu
 ```
