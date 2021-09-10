@@ -49,3 +49,24 @@ npm -v
 ```
 ![image](https://user-images.githubusercontent.com/22638955/132845933-51dfed1f-cef3-4015-bbb9-7351f447220a.png)
 
+Create a new directory for your To-Do project:
+```
+mkdir Todo
+```
+Run the command below to verify that the Todo directory is created with ls command
+![image](https://user-images.githubusercontent.com/22638955/132888031-9dd8fb77-f095-4aff-bf26-236c2d39189e.png)
+
+`cd` into the `Todo` directory
+```
+cd Todo
+```
+
+We will use the command `npm init` to initialise our project, so that a new file named `package.json` will be created. This file will normally contain information about our application and the dependencies that it needs to run. We would follow the prompts after running the command. You can press `Enter` several times to accept default values, then accept to write out the `package.json` file by typing `yes`.
+```
+npm init
+```
+![image](https://user-images.githubusercontent.com/22638955/132889103-19384da6-5dcd-4da4-a5c0-37883134ceea.png)
+
+Run the command `ls` to confirm that we have `package.json` file created.
+
+## INSTALL EXPRESSJS
