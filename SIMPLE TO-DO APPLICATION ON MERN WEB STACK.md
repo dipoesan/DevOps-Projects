@@ -121,6 +121,39 @@ We would need to open **port 5000** in our security group.
 Open up your browser and try to access the server’s Public IP or Public DNS name followed by port 5000 (Ensure that node is running in your terminal) - 
 ![image](https://user-images.githubusercontent.com/22638955/133157324-5308bd44-4adc-4b8a-88f3-15c3a38f05b8.png)
 
+## STEP 4 SETUP ROUTES
+For every task our Todo app would do, we need to create `routes` that will define various endpoints that the `To-do` app will depend on. Our Todo app will be carrying out the following actions - 
+* Create a new task
+* Display a list of all tasks
+* Delete a completed task
+
+Create a `routes` folder
+```
+mkdir routes
+cd routes
+touch api.js
+```
+Paste the below code into the `api.js` file - 
+```
+const express = require ('express');
+const router = express.Router();
+
+router.get('/todos', (req, res, next) => {
+
+});
+
+router.post('/todos', (req, res, next) => {
+
+});
+
+router.delete('/todos/:id', (req, res, next) => {
+
+})
+
+module.exports = router;
+```
+![image](https://user-images.githubusercontent.com/22638955/133169891-1ac90167-3eeb-42c1-a95a-0ce61cc906b4.png)
+
 
 
 
