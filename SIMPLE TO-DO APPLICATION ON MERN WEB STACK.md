@@ -108,3 +108,19 @@ app.listen(port, () => {
 console.log(`Server running on port ${port}`)
 });
 ```
+
+In the same directory as the index.js file, type - 
+```
+node index.js
+```
+If every thing goes well, we should see **Server running on port 5000** in the terminal.
+![image](https://user-images.githubusercontent.com/22638955/133156945-b9b90c48-16d2-4bb4-814c-6032172e839e.png)
+
+We would need to open **port 5000** in our security group.
+
+Open up your browser and try to access the server’s Public IP or Public DNS name followed by port 5000 (Ensure that node is running in your terminal) - 
+![image](https://user-images.githubusercontent.com/22638955/133157324-5308bd44-4adc-4b8a-88f3-15c3a38f05b8.png)
+
+
+
+
