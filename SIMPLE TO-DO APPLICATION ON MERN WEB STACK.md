@@ -154,6 +154,66 @@ module.exports = router;
 ```
 ![image](https://user-images.githubusercontent.com/22638955/133169891-1ac90167-3eeb-42c1-a95a-0ce61cc906b4.png)
 
+## STEP 5 SETUP MODELS
+Since the app is going to make use of Mongodb which is a NoSQL database, we need to create a model. A model is at the heart of JavaScript based applications, and it is what makes it interactive. We will also use models to define the database schema . This is important so that we will be able to define the fields stored in each Mongodb document.
 
+To create a Schema and a model, we would need to install `mongoose` which is a Node.js package that makes working with mongodb easier.
+We would create a models folder in our Todo directory, in our models folder we would create a file called `todo.js` - 
+```
+mkdir models && cd models && touch todo.js
+```
+Paste the following code into `todo.js`
+```
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+//create schema for todo
+const TodoSchema = new Schema({
+action: {
+type: String,
+required: [true, 'The todo text field is required']
+}
+})
+
+//create model for todo
+const Todo = mongoose.model('todo', TodoSchema);
+
+module.exports = Todo;
+```
+We now have to update our routes from the file `api.js` in ‘routes’ directory to make use of the new model.
+Open up the `api.js` file amd paste in the below code - 
+```
+const express = require ('express');
+const router = express.Router();
+const Todo = require('../models/todo');
+
+router.get('/todos', (req, res, next) => {
+
+//this will return all the data, exposing only the id and action field to the client
+Todo.find({}, 'action')
+.then(data => res.json(data))
+.catch(next)
+});
+
+router.post('/todos', (req, res, next) => {
+if(req.body.action){
+Todo.create(req.body)
+.then(data => res.json(data))
+.catch(next)
+}else {
+res.json({
+error: "The input field is empty"
+})
+}
+});
+
+router.delete('/todos/:id', (req, res, next) => {
+Todo.findOneAndDelete({"_id": req.params.id})
+.then(data => res.json(data))
+.catch(next)
+})
+
+module.exports = router;
+```
 
 
