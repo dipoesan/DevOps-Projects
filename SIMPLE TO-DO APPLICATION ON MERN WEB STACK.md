@@ -216,4 +216,6 @@ Todo.findOneAndDelete({"_id": req.params.id})
 module.exports = router;
 ```
 
+## STEP 6 SETUP MONGODB
+We need a database where we will store our data. For this we will make use of `mLab`. mLab provides a MongoDB database as a service solution (DBaaS), so to make life easy, we will need to sign up for a shared cluster free account, which is ideal for our use case. [Sign up here](https://www.mongodb.com/atlas-signup-from-mlab). Follow the sign up process, select AWS as the cloud provider, and choose a region near you.
 
