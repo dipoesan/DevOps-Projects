@@ -305,6 +305,50 @@ Create a GET request to the API on `http://<PublicIP-or-PublicDNS>:5000/api/todo
 
 ![image](https://user-images.githubusercontent.com/22638955/133349228-d57e3d43-5200-4be2-a723-51efb9acc600.png)
 
+## STEP 8 FRONTEND CREATION
 
+In the `todo` directory, run -
+```
+npx create-react-app client
+```
 
+This will create a new folder in the `Todo` directory called `client`, where we will add all the react code.
 
+Before testing the react app, we would have to install some dependencies. These dependencies are `concurrently` and `nodemon`.
+`Concurrently` helps us to run more than one command simultaneously from the same terminal window, and `nodemon` is used to run and monitor our server. If there is any change in the server code, nodemon would restart it automatically and load up the new changes.
+```
+npm install concurrently --save-dev
+npm install nodemon --save-dev
+```
+
+In the `Todo` folder, look for the code below and swap it with the other code below too - 
+
+```
+swap 
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+with
+"scripts": {
+"start": "node index.js",
+"start-watch": "nodemon index.js",
+"dev": "concurrently \"npm run start-watch\" \"cd client && npm start\""
+},
+```
+
+We now have to configure proxy in `package.json`
+```
+cd client 
+vi package.json
+```
+
+Add the key value pair below into the `package.json` file
+```
+"proxy": "http://localhost:5000"
+```
+The purpose of adding the proxy configuration is to make it possible to access the application directly from the browser by simply calling the server url like `http://localhost:5000` rather than always including the entire path like `http://localhost:5000/api/todos`
+
+CD back into the `Todo` directory and run the command below - 
+```
+npm run dev
+```
