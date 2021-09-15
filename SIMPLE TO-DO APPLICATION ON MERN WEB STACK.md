@@ -114,11 +114,13 @@ In the same directory as the index.js file, type -
 node index.js
 ```
 If every thing goes well, we should see **Server running on port 5000** in the terminal.
+
 ![image](https://user-images.githubusercontent.com/22638955/133156945-b9b90c48-16d2-4bb4-814c-6032172e839e.png)
 
 We would need to open **port 5000** in our security group.
 
 Open up your browser and try to access the server’s Public IP or Public DNS name followed by port 5000 (Ensure that node is running in your terminal) - 
+
 ![image](https://user-images.githubusercontent.com/22638955/133157324-5308bd44-4adc-4b8a-88f3-15c3a38f05b8.png)
 
 ## STEP 4 SETUP ROUTES
@@ -160,6 +162,7 @@ Since the app is going to make use of Mongodb which is a NoSQL database, we need
 To create a Schema and a model, we would need to install `mongoose` which is a Node.js package that makes working with mongodb easier.
 We would create a models folder in our Todo directory, in our models folder we would create a file called `todo.js` - 
 ```
+npm install mongoose
 mkdir models && cd models && touch todo.js
 ```
 Paste the following code into `todo.js`
@@ -218,4 +221,90 @@ module.exports = router;
 
 ## STEP 6 SETUP MONGODB
 We need a database where we will store our data. For this we will make use of `mLab`. mLab provides a MongoDB database as a service solution (DBaaS), so to make life easy, we will need to sign up for a shared cluster free account, which is ideal for our use case. [Sign up here](https://www.mongodb.com/atlas-signup-from-mlab). Follow the sign up process, select AWS as the cloud provider, and choose a region near you.
+
+Complete a get started checklist and allow access to the MongoDB database from anywhere (Not secure, but it is ideal for testing)
+
+Create a MongoDB database and collection inside mLab
+
+In the `index.js` file that was created previously, we specified `process.env` to access environment variables, but we have not created this file so we need to do that now.
+```
+vi .env
+```
+Add the connection string into it to access the database in it. To get the connection string, click on clusters -> connect -> connect your application -> make sure the driver is `node.js` -> copy the coonection string
+
+Update the `index.js` file to reflect the use of the `.env` file so that `node.js` can connect to the DB.
+```
+vi index.js
+**press escape**
+:%d
+```
+Paste the below code into the now empty file - 
+```
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const routes = require('./routes/api');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+
+const port = process.env.PORT || 5000;
+
+//connect to the database
+mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: true })
+.then(() => console.log(`Database connected successfully`))
+.catch(err => console.log(err));
+
+//since mongoose promise is depreciated, we overide it with node's promise
+mongoose.Promise = global.Promise;
+
+app.use((req, res, next) => {
+res.header("Access-Control-Allow-Origin", "\*");
+res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+next();
+});
+
+app.use(bodyParser.json());
+
+app.use('/api', routes);
+
+app.use((err, req, res, next) => {
+console.log(err);
+next();
+});
+
+app.listen(port, () => {
+console.log(`Server running on port ${port}`)
+});
+```
+
+Using environment variables to store information is considered more secure and best practice to separate configuration and secret data from the application, instead of writing connection strings directly inside the `index.js` application file.
+
+Start the server using the below command - 
+```
+node index.js
+```
+
+![image](https://user-images.githubusercontent.com/22638955/133348257-b8bf83d7-1013-4707-9b8b-a479ef8d68e1.png)
+
+If you see a message like what we have in the screenshot above, then the backend has been configured successfully.
+
+
+## STEP 7 TESTING BACKEND CODE WITHOUT FRONTEND USING RESTFUL API
+
+Open Postman, create a POST request to the API `http://<PublicIP-or-PublicDNS>:5000/api/todos`. This request sends a new task to the To-Do list so the application can store it in the database. **NB**: Make sure you set the header key `content-type` as `application/json`
+
+![image](https://user-images.githubusercontent.com/22638955/133348751-4a1224e8-e417-447d-8c60-dd721f6c40e5.png)
+
+![image](https://user-images.githubusercontent.com/22638955/133348896-4af29884-735a-404d-8243-53e71cf8c2c8.png)
+
+From the above, we can see that the `post` request was successful as it showed up at the bottom of the page and an ID was also generated for the `post` request. All records that were posted now exist in our Todo application.
+
+Create a GET request to the API on `http://<PublicIP-or-PublicDNS>:5000/api/todos`. This request retrieves all existing records from the To-do application (backend requests these records from the database and sends it us back as a response to GET request).
+
+![image](https://user-images.githubusercontent.com/22638955/133349228-d57e3d43-5200-4be2-a723-51efb9acc600.png)
+
+
+
 
