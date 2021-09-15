@@ -352,3 +352,74 @@ CD back into the `Todo` directory and run the command below -
 ```
 npm run dev
 ```
+
+Our app should open and start running on `localhost:3000`. (Rememmber to open port 3000 in our inbound rules)
+
+We are now going to create our react components. One of the advantages of react is that it makes use of components, which are reusable and also makes code modular. For our Todo app, there will be two stateful components and one stateless component.
+
+In the `Todo` directory, run the following commands - 
+```
+cd client
+cd src
+mkdir components
+cd components
+touch Input.js ListTodo.js Todo.js
+```
+ Open the `Input.js` directory with the `vi` command and paste the code below into it - 
+ ```
+ import React, { Component } from 'react';
+import axios from 'axios';
+
+class Input extends Component {
+
+state = {
+action: ""
+}
+
+addTodo = () => {
+const task = {action: this.state.action}
+
+    if(task.action && task.action.length > 0){
+      axios.post('/api/todos', task)
+        .then(res => {
+          if(res.data){
+            this.props.getTodos();
+            this.setState({action: ""})
+          }
+        })
+        .catch(err => console.log(err))
+    }else {
+      console.log('input field required')
+    }
+
+}
+
+handleChange = (e) => {
+this.setState({
+action: e.target.value
+})
+}
+
+render() {
+let { action } = this.state;
+return (
+<div>
+<input type="text" onChange={this.handleChange} value={action} />
+<button onClick={this.addTodo}>add todo</button>
+</div>
+)
+}
+}
+
+export default Input
+```
+
+To make use of Axios, which is a Promise based HTTP client for the browser and node.js, we need to `cd` into our client from our terminal and run yarn add axios or npm install axios.
+```
+cd ..
+cd ..
+npm install axios
+```
+
+
+
