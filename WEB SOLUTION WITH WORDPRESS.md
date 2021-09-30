@@ -85,9 +85,55 @@ sudo mkfs -t ext4 /dev/webdata-vg/apps-lv
 sudo mkfs -t ext4 /dev/webdata-vg/logs-lv
 ```
 
-Create /var/www/html directory to store website files
+Create `/var/www/html` directory to store website files
 ```
 sudo mkdir -p /var/www/html
 ```
 
+Create `/home/recovery/logs` to store backup of log data
+```
+sudo mkdir -p /home/recovery/logs
+```
+
+Mount `/var/www/html` on `apps-lv` logical volume
+```
+sudo mount /dev/webdata-vg/apps-lv /var/www/html/
+```
+
+We would use the `rsync` utility to backup all the files in the log directory /var/log into /home/recovery/logs as this is required before mounting the file system
+```
+sudo rsync -av /var/log/. /home/recovery/logs/
+```
+
+Mount `/var/log` on `logs-lv` logical volume. (Note that all the existing data on `/var/log` will be deleted. That is why we backed up the `log` directory earlier
+```
+sudo mount /dev/webdata-vg/logs-lv /var/log
+```
+
+Restore `log` files back into `/var/log` directory
+```
+sudo rsync -av /home/recovery/logs/. /var/log
+```
+
+Update `/etc/fstab` file so that the mount configuration will persist after restart of the server.
+
+The UUID of the device will be used to update the `/etc/fstab` file;
+
+To get the UUID of the devices, we would run `sudo blkid`
+
+![image](https://user-images.githubusercontent.com/22638955/135521786-1d69290d-bf1b-461c-ade2-172e65720bf0.png)
+
+Open up the `/etc/fstab` file using `sudo vi /etc/fstab` and paste the UUID's as shown in the image below
+
+![image](https://user-images.githubusercontent.com/22638955/135527202-076b4942-1820-426c-aa2f-c9059aeee7af.png)
+
+Test the configuration and reload the daemon
+```
+sudo mount -a
+sudo systemctl daemon-reload
+```
+
+Verify the setup by running df -h, output must look like what is below:
+
+![image](https://user-images.githubusercontent.com/22638955/135536944-dd2c6b37-7502-43a8-8934-a2f06af1762a.png)
 
