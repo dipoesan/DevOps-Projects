@@ -31,4 +31,63 @@ Use the `lsblk` utility to view the newly configured partitions on each of the 3
 
 ![image](https://user-images.githubusercontent.com/22638955/135506269-820be82d-7033-4712-84e8-1369a5833593.png)
 
+Install the `lvm2` package using `sudo yum install lvm2 -y` 
+
+Run `sudo lvmdiskscan` command to check for available partitions.
+
+![image](https://user-images.githubusercontent.com/22638955/135509096-d87ee9aa-25ad-4600-8efe-0c2a8a80bc98.png)
+
+Use `pvcreate` utility to mark each of 3 disks as physical volumes (PVs) to be used by LVM
+
+```
+sudo pvcreate /dev/xvdf1
+sudo pvcreate /dev/xvdg1
+sudo pvcreate /dev/xvdh1
+```
+
+![image](https://user-images.githubusercontent.com/22638955/135509769-1e18a7ee-84f8-45cf-b508-a6e07223798b.png)
+
+We would verify that our Physical volume has been created successfully by running `sudo pvs`
+
+![image](https://user-images.githubusercontent.com/22638955/135510322-9df2d7db-7409-4e50-944a-7af312742144.png)
+
+Use the `vgcreate` utility to add all 3 PVs to a volume group (VG). Name the VG `webdata-vg`
+
+```
+sudo vgcreate webdata-vg /dev/xvdh1 /dev/xvdg1 /dev/xvdf1
+```
+
+Verify that the VG has been created successfully by running `sudo vgs`
+
+![image](https://user-images.githubusercontent.com/22638955/135511290-fc844f49-6f1d-40f9-a8da-f6569a469271.png)
+
+Use the `lvcreate` utility to create 2 logical volumes. apps-lv (Use half of the PV size), and logs-lv Use the remaining space of the PV size. Apps-lv will be used to store data for the Website while, logs-lv will be used to store data for logs.
+
+```
+sudo lvcreate -n apps-lv -L 14G webdata-vg
+sudo lvcreate -n logs-lv -L 14G webdata-vg
+```
+Verify that the Logical Volumes have been created successfully by running `sudo lvs`
+
+![image](https://user-images.githubusercontent.com/22638955/135518047-eeec5397-dc7c-4bed-bf49-f8f768ded46e.png)
+
+Verify the entire setup
+```
+sudo vgdisplay -v #view complete setup - VG, PV, and LV
+sudo lsblk 
+```
+
+![image](https://user-images.githubusercontent.com/22638955/135518499-761e6cdd-8b2c-4cc5-aafc-62a179fdedf8.png)
+
+Use mkfs.ext4 to format the logical volumes with ext4 filesystem
+```
+sudo mkfs -t ext4 /dev/webdata-vg/apps-lv
+sudo mkfs -t ext4 /dev/webdata-vg/logs-lv
+```
+
+Create /var/www/html directory to store website files
+```
+sudo mkdir -p /var/www/html
+```
+
 
