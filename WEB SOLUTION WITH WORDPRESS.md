@@ -125,7 +125,7 @@ To get the UUID of the devices, we would run `sudo blkid`
 
 Open up the `/etc/fstab` file using `sudo vi /etc/fstab` and paste the UUID's as shown in the image below
 
-![image](https://user-images.githubusercontent.com/22638955/135696246-8e715e6b-8ee1-4ced-8d5d-0395f8a60735.png)
+![image](https://user-images.githubusercontent.com/22638955/135696342-62c15ff6-44f8-4fa3-b079-ecd81ea4f685.png)
 
 Test the configuration and reload the daemon
 ```
