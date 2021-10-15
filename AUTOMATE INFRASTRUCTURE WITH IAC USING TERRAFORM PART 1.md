@@ -109,57 +109,115 @@ Run `terraform plan` and `terraform apply`
 
 ## FIXING THE PROBLEMS BY CODE REFACTORING
 
-Fixing Hard Coded Values: We will introduce variables, and remove hard coding.
-
-We would declare variables in our `main.tf` file as shown below
+Paste the code below into the `main.tf` file
 ```
+# Get list of availability zones
+data "aws_availability_zones" "available" {
+state = "available"
+}
+
 variable "region" {
-        default = "us-east-2"
-    }
+      default = "eu-central-1"
+}
 
-    variable "vpc_cidr" {
-        default = "172.16.0.0/16"
-    }
+variable "vpc_cidr" {
+    default = "172.16.0.0/16"
+}
 
-    variable "enable_dns_support" {
-        default = "true"
-    }
+variable "enable_dns_support" {
+    default = "true"
+}
 
-    variable "enable_dns_hostnames" {
-        default ="true" 
-    }
+variable "enable_dns_hostnames" {
+    default ="true" 
+}
 
-    variable "enable_classiclink" {
-        default = "false"
-    }
+variable "enable_classiclink" {
+    default = "false"
+}
 
-    variable "enable_classiclink_dns_support" {
-        default = "false"
-    }
+variable "enable_classiclink_dns_support" {
+    default = "false"
+}
 
-    provider "aws" {
-    region = var.region
-    }
+  variable "preferred_number_of_public_subnets" {
+      default = 2
+}
 
-    # Create VPC
-    resource "aws_vpc" "main" {
-    cidr_block                     = var.vpc_cidr
-    enable_dns_support             = var.enable_dns_support 
-    enable_dns_hostnames           = var.enable_dns_support
-    enable_classiclink             = var.enable_classiclink
-    enable_classiclink_dns_support = var.enable_classiclink
+provider "aws" {
+  region = var.region
+}
 
-    }
+# Create VPC
+resource "aws_vpc" "main" {
+  cidr_block                     = var.vpc_cidr
+  enable_dns_support             = var.enable_dns_support 
+  enable_dns_hostnames           = var.enable_dns_support
+  enable_classiclink             = var.enable_classiclink
+  enable_classiclink_dns_support = var.enable_classiclink
+
+}
+
+# Create public subnets
+resource "aws_subnet" "public" {
+  count  = var.preferred_number_of_public_subnets == null ? length(data.aws_availability_zones.available.names) : var.preferred_number_of_public_subnets   
+  vpc_id = aws_vpc.main.id
+  cidr_block              = cidrsubnet(var.vpc_cidr, 4 , count.index)
+  map_public_ip_on_launch = true
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+
+}
 ```
 
-Fixing multiple resource blocks
-Let us fetch Availability zones from AWS using terraforms data sources, and replace the hard coded value in the subnet’s availability_zone section.
+From the above, we have introduced variables, and removed hard coding of values within the file.
 
+We declared variables which would now hold the previously hard coded values
 
+We went ahead to fetch Availability zones from AWS using terraforms data sources, and replace the hard coded value in the subnet’s availability_zone section.
 
+To make use of the data resource, we introduced a count argument in the subnet block
 
+## Introducing variables.tf & terraform.tfvars
+
+Instead of havng a long lisf of variables in main.tf file, we can actually make our code a lot more readable and better structured by moving out some parts of the configuration content to other files.
+
+We will put all variable declarations in a separate file and provide non default values to each of them
+
+* Create a new file and name it `variables.tf`
+* Copy all the variable declarations into the new file
+* Create another file, name it `terraform.tfvars`
+* Set values for each of the variables.
+
+Our `main.tf` file should now look like below 
+![image](https://user-images.githubusercontent.com/22638955/137414815-4bc2c818-7b62-42b8-9f37-35c038211c66.png)
+
+`Variables.tf` should look like this 
+
+![image](https://user-images.githubusercontent.com/22638955/137414870-104a19b4-70be-45a4-b8f0-e113378cf7a1.png)
+
+`terraform.tfvars` should have the below code 
+```
+region = "eu-central-1"
+
+vpc_cidr = "172.16.0.0/16" 
+
+enable_dns_support = "true" 
+
+enable_dns_hostnames = "true"  
+
+enable_classiclink = "false" 
+
+enable_classiclink_dns_support = "false" 
+
+preferred_number_of_public_subnets = 2
+```
+
+Our directory structure should look like below -
 
 ![image](https://user-images.githubusercontent.com/22638955/137412683-0d3788b1-a39d-4762-b9ee-395e31c6eb9e.png)
 
+Running terraform plan should give us an output like below
+
 ![image](https://user-images.githubusercontent.com/22638955/137412774-ef17172c-0559-451f-814e-8ea2bd70e58e.png)
 
+In the next project we will expand the infrastructure further with more Terraform automation
